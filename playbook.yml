@@ -1,0 +1,41 @@
+---
+- name: Home task for lesson 21
+  hosts: lessonNode
+
+  tasks:
+
+  - name: Install requirements for ansible server software
+    apt:
+     name: sshpass
+     state: latest
+    delegate_to: localhost
+
+  - name: TASK 2. Add Docker GPG apt Key
+    apt_key:
+     url: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+     state: present
+
+  - name: TASK 2. Add Docker Repository
+    apt_repository:
+     repo: deb https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable
+     state: present
+
+  - name: TASK 2. Install docker and nginx
+    apt:
+     name:
+      - nginx
+      - docker-ce
+     state: latest
+     update_cache: true
+
+  - name: TASK 3. Add the user 'oleksaandr' with group of 'docker'
+    user:
+     name: oleksandr
+     comment: Halchenko Oleksandr
+     group: docker
+
+  - name: TASK 4. Get nginx version
+    command: "nginx -v"
+    register: version_nginx
+  - debug:
+      msg: "{{ version_nginx.stderr }}"
